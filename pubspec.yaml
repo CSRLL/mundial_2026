@@ -60,7 +60,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/fondo_home_2026.png
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
