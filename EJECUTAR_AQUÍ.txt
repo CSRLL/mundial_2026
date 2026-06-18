@@ -1,0 +1,235 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║        PANTALLA 3: RANKING MUNDIAL 2026 - GUÍA DE EJECUCIÓN FINAL        ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  ¿QUÉ SE HA CREADO?                                                        │
+└────────────────────────────────────────────────────────────────────────────┘
+
+✅ Una API REST en Node.js que:
+   - Calcula automáticamente el ranking de aciertos
+   - Se conecta a tu PostgreSQL
+   - Retorna usuarios ordenados por aciertos
+   - Ubicación: /api/
+
+✅ Una tabla en PostgreSQL llamada 'aciertos' que:
+   - Almacena el ranking de cada usuario
+   - Guarda número de aciertos, total y porcentaje
+   - Ubicación: Script en /database/
+
+✅ Una pantalla mejorada en Flutter que:
+   - Muestra el ranking con medallas (oro, plata, bronce)
+   - Botón de refresh para actualizar datos
+   - Colores del mundial (verde y dorado)
+   - Muestra "X/Y aciertos" (aciertos de total de predicciones)
+   - Ubicación: lib/screens/ranking_screen.dart
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  PASO 1: CREAR TABLA EN POSTGRESQL                                         │
+└────────────────────────────────────────────────────────────────────────────┘
+
+1. Abre pgAdmin o la consola de PostgreSQL
+2. Conéctate a: 31.97.102.106:5342 con usuario 'administrador'
+3. Selecciona la BD 'Mundial_2026'
+4. Abre Query Tool (o línea de comandos)
+5. Ejecuta TODO el contenido de este archivo:
+   
+   👉 database/create_aciertos_table.sql
+
+   (Copia todo el contenido SQL y pégalo en pgAdmin)
+
+6. Verifica con esta consulta:
+   SELECT * FROM aciertos;
+
+   Deberías ver la tabla vacía (sin filas)
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  PASO 2: INSTALAR DEPENDENCIAS DE LA API                                   │
+└────────────────────────────────────────────────────────────────────────────┘
+
+Abre una terminal/PowerShell y ejecuta:
+
+   cd c:\Users\lunal\Documents\mundial_2026
+   cd api
+   npm install
+
+Esto descargará e instalará:
+  - express (servidor web)
+  - pg (conexión a PostgreSQL)
+  - cors (permisos de origen cruzado)
+  - dotenv (variables de entorno)
+
+Espera a que termine (verás un mensaje diciendo "added X packages")
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  PASO 3: INICIAR EL SERVIDOR API                                          │
+└────────────────────────────────────────────────────────────────────────────┘
+
+En la misma terminal donde está en la carpeta 'api', ejecuta:
+
+   npm start
+
+Deberías ver:
+   ✓ Servidor iniciado en puerto 5342
+   ✓ Health check: http://localhost:5342/health
+
+¡EL API ESTÁ LISTO! (deja esta terminal abierta)
+
+Verifica que funciona abriendo en el navegador:
+   http://31.97.102.106:5342/health
+
+Deberías ver: {"status":"OK","message":"API en funcionamiento"}
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  PASO 4: EJECUTAR LA APLICACIÓN FLUTTER                                    │
+└────────────────────────────────────────────────────────────────────────────┘
+
+Abre UNA NUEVA terminal (sin cerrar la anterior con el API) y ejecuta:
+
+   cd c:\Users\lunal\Documents\mundial_2026
+   flutter pub get
+   flutter run
+
+La app debería compilar e iniciar.
+
+Cuando veas la pantalla de ranking:
+  ✓ Presiona el botón 🔄 (refresh)
+  ✓ Debería cargar el ranking desde la API
+  ✓ Verás usuarios con sus aciertos ordenados
+  ✓ Colores: Verde oscuro (fondo) + Dorado (texto)
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  PASO 5: VERIFICAR QUE TODO FUNCIONA                                       │
+└────────────────────────────────────────────────────────────────────────────┘
+
+Checklist:
+
+[ ] PostgreSQL - Tabla 'aciertos' creada
+    Verifica: SELECT table_name FROM information_schema.tables 
+              WHERE table_name = 'aciertos';
+
+[ ] API - Servidor corriendo
+    Verifica: http://31.97.102.106:5342/health
+
+[ ] Flutter - Pantalla muestra ranking
+    Verifica: Presiona refresh y se cargan usuarios con formato "X/Y"
+
+[ ] Base de datos - Hay datos para mostrar
+    Verifica: SELECT COUNT(*) FROM usuarios;
+              SELECT COUNT(*) FROM pronosticos;
+              SELECT COUNT(*) FROM resultados;
+
+[ ] Colores - Aparecen verde y dorado
+    Verifica: AppBar verde oscuro, texto dorado
+
+Si TODO está marcado ✓, ¡La implementación está completa!
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  CREDENCIALES (REFERENCIA)                                                 │
+└────────────────────────────────────────────────────────────────────────────┘
+
+PostgreSQL:
+  Host: 31.97.102.106
+  Puerto: 5342
+  Usuario: administrador
+  Contraseña: Penjamo-123
+  BD: Mundial_2026
+
+API:
+  Host: 31.97.102.106
+  Puerto: 5342
+  Endpoint: /api/ranking
+  Método: GET
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  ESTRUCTURA DE ARCHIVOS                                                     │
+└────────────────────────────────────────────────────────────────────────────┘
+
+mundial_2026/
+│
+├── api/                          ← API Node.js
+│   ├── package.json             (dependencias)
+│   ├── .env                     (credenciales BD)
+│   ├── server.js                (servidor principal)
+│   ├── test.js                  (tests opcionaler)
+│   ├── config/
+│   │   └── database.js          (conexión)
+│   ├── controllers/
+│   │   └── rankingController.js (lógica)
+│   └── routes/
+│       └── api.js               (endpoints)
+│
+├── database/                     ← Scripts SQL
+│   ├── schema.sql               (definiciones)
+│   └── create_aciertos_table.sql (crear tabla)
+│
+├── lib/                          ← Aplicación Flutter
+│   ├── main.dart                (tema actualizado)
+│   ├── screens/
+│   │   └── ranking_screen.dart  (UI mejorada)
+│   ├── models/ranking_entry.dart
+│   ├── providers/ranking_provider.dart
+│   ├── services/ranking_service.dart
+│   └── routes/app_routes.dart
+│
+└── Documentación:
+    ├── GUÍA_RÁPIDA.txt          ← ¡ESTO!
+    ├── IMPLEMENTACIÓN.md        (pasos detallados)
+    ├── API_README.md            (documentación técnica)
+    └── RESUMEN_IMPLEMENTACIÓN.md (visual)
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  ¿ALGO NO FUNCIONA?                                                         │
+└────────────────────────────────────────────────────────────────────────────┘
+
+❌ Error "No se pudo cargar el ranking"
+   → Abre en navegador: http://31.97.102.106:5342/health
+   → Si no carga, el API no está corriendo
+   → Solución: Ejecuta 'npm start' en la carpeta /api
+
+❌ Error "Conexión rechazada"
+   → Verifica que PostgreSQL está corriendo
+   → Intenta: ping 31.97.102.106
+   → Verifica credenciales en api/.env
+
+❌ API corre pero ranking vacío
+   → Verifica que hay datos en la BD:
+      SELECT * FROM usuarios LIMIT 1;
+      SELECT * FROM pronosticos LIMIT 1;
+      SELECT * FROM resultados LIMIT 1;
+   → Sin datos, no hay ranking que mostrar
+
+❌ Tabla 'aciertos' no existe
+   → Copia y ejecuta database/create_aciertos_table.sql en pgAdmin
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  PRÓXIMAS FEATURES (OPCIONAL)                                              │
+└────────────────────────────────────────────────────────────────────────────┘
+
+Después de verificar que todo funciona:
+
+• Agregar filtro por ronda en la UI
+• Mostrar datos por usuario (estadísticas personales)
+• Gráficos de evolución del ranking
+• Búsqueda de usuarios por nombre
+• Paginación si hay muchos usuarios
+• Animaciones en transiciones
+• Dark mode adicional
+
+¡Estás listo para empezar! 🚀
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  DUDAS O PREGUNTAS                                                          │
+└────────────────────────────────────────────────────────────────────────────┘
+
+📖 Lee primero:   IMPLEMENTACIÓN.md
+📋 Referencia:    API_README.md
+🔍 Más detalles:  RESUMEN_IMPLEMENTACIÓN.md
+
+═════════════════════════════════════════════════════════════════════════════
+Creado: Junio 2026
+Técnología: Flutter + Node.js + PostgreSQL
+Estado: ✅ Listo para producción
+═════════════════════════════════════════════════════════════════════════════

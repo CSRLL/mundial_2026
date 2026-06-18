@@ -1,0 +1,203 @@
+═══════════════════════════════════════════════════════════════════
+  GUÍA RÁPIDA - PANTALLA 3: RANKING MUNDIAL 2026
+═══════════════════════════════════════════════════════════════════
+
+📋 CHECKLIST DE IMPLEMENTACIÓN
+
+[ ] PASO 1: Crear tabla en PostgreSQL
+    → Archivo: database/create_aciertos_table.sql
+    → Copiar y ejecutar en pgAdmin o CLI de PostgreSQL
+    
+[ ] PASO 2: Instalar dependencias de API
+    → Ejecutar en terminal:
+       cd api
+       npm install
+    
+[ ] PASO 3: Iniciar API Node.js
+    → Ejecutar en terminal:
+       npm start
+    → Verificar en navegador: http://31.97.102.106:5342/health
+    
+[ ] PASO 4: Ejecutar Flutter
+    → Ejecutar en terminal:
+       flutter pub get
+       flutter run
+    
+[ ] PASO 5: Probar la aplicación
+    → Presiona botón refresh en la pantalla
+    → Verifica que se carga el ranking
+    → Comprueba colores: verde oscuro + dorado
+
+═══════════════════════════════════════════════════════════════════
+  CREDENCIALES
+═══════════════════════════════════════════════════════════════════
+
+PostgreSQL:
+  Host: 31.97.102.106
+  Puerto: 5342
+  Usuario: administrador
+  Contraseña: Penjamo-123
+  Base de datos: Mundial_2026
+
+API:
+  URL Base: http://31.97.102.106:5342
+  Endpoint: /api/ranking
+
+═══════════════════════════════════════════════════════════════════
+  ESTRUCTURA DE ARCHIVOS CREADOS
+═══════════════════════════════════════════════════════════════════
+
+✅ NUEVOS (12 archivos):
+
+  API Node.js:
+    api/package.json                    ← Dependencias npm
+    api/.env                           ← Configuración BD
+    api/server.js                      ← Servidor principal
+    api/config/database.js             ← Conexión PostgreSQL
+    api/controllers/rankingController.js ← Lógica ranking
+    api/routes/api.js                  ← Rutas endpoints
+    api/test.js                        ← Script de pruebas
+
+  Base de Datos:
+    database/schema.sql                ← SQL tabla aciertos
+    database/create_aciertos_table.sql ← Script creación
+
+  Documentación:
+    API_README.md                      ← Docs API
+    IMPLEMENTACIÓN.md                  ← Guía paso a paso
+    RESUMEN_IMPLEMENTACIÓN.md          ← Resumen visual
+
+✏️ MODIFICADOS (2 archivos):
+
+    lib/main.dart                      ← Colores mundial
+    lib/screens/ranking_screen.dart    ← UI mejorada + refresh
+
+═══════════════════════════════════════════════════════════════════
+  MEJORAS IMPLEMENTADAS
+═══════════════════════════════════════════════════════════════════
+
+✨ Flutter:
+   ✓ Colores del mundial (verde oscuro #1E5628 + dorado #FFD700)
+   ✓ Botón refresh en AppBar
+   ✓ Medallas dinámicas (oro, plata, bronce)
+   ✓ Muestra "X/Y aciertos" (aciertos de total de predicciones)
+   ✓ Card con elevación
+   ✓ Mejor tipografía y spacing
+   ✓ Responsive design
+
+✨ API:
+  ✓ Endpoint GET /api/ranking
+  ✓ Cálculo automático de aciertos
+  ✓ Ordenamiento por aciertos y porcentaje
+  ✓ Soporte para filtrar por ronda
+  ✓ Manejo de errores
+  ✓ Health check endpoint
+
+✨ Base de Datos:
+  ✓ Tabla 'aciertos' con estructura optimizada
+  ✓ Índices para búsquedas rápidas
+  ✓ Relaciones con FK
+  ✓ UNIQUE constraint para évitar duplicados
+
+═══════════════════════════════════════════════════════════════════
+  FLUJO DE DATOS
+═══════════════════════════════════════════════════════════════════
+
+Usuario presiona Refresh
+         ↓
+RankingScreen llama a _refreshRanking()
+         ↓
+RankingProvider ejecuta loadRanking()
+         ↓
+RankingService hace GET a /api/ranking
+         ↓
+API Node.js calcula aciertos desde:
+  - Pronósticos del usuario
+  - Resultados de partidos
+         ↓
+Retorna JSON con ranking ordenado
+         ↓
+Flutter muestra lista con medallas y colores
+         ↓
+Usuario ve su posición en el ranking ✓
+
+═══════════════════════════════════════════════════════════════════
+  CÁLCULO DE ACIERTOS
+═══════════════════════════════════════════════════════════════════
+
+Un pronóstico es CORRECTO si:
+  - goles_equipo1_predicho == goles_equipo1_real AND
+  - goles_equipo2_predicho == goles_equipo2_real
+
+Ejemplo:
+  Pronóstico: Argentina 2 - 1 Francia
+  Resultado:  Argentina 2 - 1 Francia
+  ✓ ACIERTO (ambos goles coinciden)
+
+  Pronóstico: Argentina 2 - 0 Francia
+  Resultado:  Argentina 2 - 1 Francia
+  ✗ NO ACIERTO (goles diferentes)
+
+═══════════════════════════════════════════════════════════════════
+  TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+❌ "No se pudo cargar el ranking"
+   → Verifica que:
+     1. API está ejecutándose (npm start)
+     2. PostgreSQL está activo
+     3. Tabla 'aciertos' existe
+     4. Hay datos en usuarios, pronósticos, resultados
+
+❌ "Error de conexión a BD"
+   → Verifica en .env:
+     DATABASE_HOST=31.97.102.106
+     DATABASE_PORT=5342
+     DATABASE_USER=administrador
+     DATABASE_PASSWORD=Penjamo-123
+
+❌ "API no responde"
+   → Intenta:
+     curl http://31.97.102.106:5342/health
+   → Si no funciona, reinicia API:
+     Ctrl+C y luego npm start
+
+❌ "Ranking vacío en Flutter"
+   → Verifica que haya datos reales en:
+     SELECT * FROM usuarios;
+     SELECT * FROM pronosticos;
+     SELECT * FROM resultados;
+
+═══════════════════════════════════════════════════════════════════
+  ARCHIVOS IMPORTANTES
+═══════════════════════════════════════════════════════════════════
+
+Leer PRIMERO:
+  1. IMPLEMENTACIÓN.md      ← Pasos detallados
+  2. API_README.md          ← Info técnica API
+  3. Este archivo (GUÍA RÁPIDA)
+
+Si algo no funciona:
+  1. Revisa IMPLEMENTACIÓN.md sección "Solución de Problemas"
+  2. Ejecuta api/test.js para probar API
+  3. Verifica logs en consola del API
+
+═══════════════════════════════════════════════════════════════════
+  PRÓXIMOS PASOS OPCIONALES
+═══════════════════════════════════════════════════════════════════
+
+Después de verificar que todo funciona:
+
+- Agregar filtro por ronda en UI
+- Agregar búsqueda de usuarios
+- Mostrar estadísticas por usuario
+- Agregar gráficos de evolución
+- Implementar paginación si hay muchos usuarios
+- Agregar animaciones al cargar
+
+═══════════════════════════════════════════════════════════════════
+
+¿Preguntas o problemas?
+Consulta IMPLEMENTACIÓN.md o contacta al equipo.
+
+═══════════════════════════════════════════════════════════════════
