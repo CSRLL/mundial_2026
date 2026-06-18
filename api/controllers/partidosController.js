@@ -1,5 +1,6 @@
 const pool = require('../config/database');
 
+// Función para obtener todos los partidos con su ronda y equipos.
 const getPartidos = async (req, res) => {
   try {
     const query = `
@@ -19,12 +20,15 @@ const getPartidos = async (req, res) => {
       ORDER BY p.id_ronda, p.fecha;
     `;
 
+    // Ejecuta la consulta en la base de datos.
     const result = await pool.query(query);
 
+    // Regresa los partidos en formato JSON.
     res.json({
       partidos: result.rows,
     });
   } catch (error) {
+    // Si ocurre un error, se muestra en consola y se manda respuesta de error.
     console.error('Error al obtener partidos:', error);
     res.status(500).json({
       message: 'Error al obtener partidos',
@@ -33,6 +37,45 @@ const getPartidos = async (req, res) => {
   }
 };
 
+// Función para obtener los pronósticos de un partido específico.
+const getPronosticosPorPartido = async (req, res) => {
+  try {
+    // Se obtiene el id del partido desde la URL.
+    const { idPartido } = req.params;
+
+    const query = `
+      SELECT 
+        pr.id_pronostico,
+        pr.id_partido,
+        pr.id_usuario,
+        u.nombre AS nombre_usuario,
+        pr.goles_e1,
+        pr.goles_e2
+      FROM pronostico pr
+      INNER JOIN usuarios u ON pr.id_usuario = u.id_usuario
+      WHERE pr.id_partido = $1
+      ORDER BY pr.id_pronostico ASC;
+    `;
+
+    // Se consulta la tabla pronostico y se une con usuarios para obtener el nombre.
+    const result = await pool.query(query, [idPartido]);
+
+    // Regresa los pronósticos encontrados para ese partido.
+    res.json({
+      pronosticos: result.rows,
+    });
+  } catch (error) {
+    // Si ocurre un error, se manda una respuesta para avisar al frontend.
+    console.error('Error al obtener pronósticos:', error);
+    res.status(500).json({
+      message: 'Error al obtener los pronósticos del partido',
+      error: error.message,
+    });
+  }
+};
+
+// Se exportan las funciones para poder usarlas en las rutas de la API.
 module.exports = {
   getPartidos,
+  getPronosticosPorPartido,
 };

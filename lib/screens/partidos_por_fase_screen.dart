@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/partido.dart';
+import '../models/pronostico.dart';
 import '../services/partidos_service.dart';
 
 class PartidosPorFaseScreen extends StatelessWidget {
@@ -278,24 +279,50 @@ class _PartidoCard extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Botón para abrir el detalle del partido.
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: bordeClaro,
-                side: const BorderSide(color: bordeClaro),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 8,
+            // Botones de la tarjeta:
+            // Ver todo muestra fecha y hora.
+            // Pronósticos muestra los pronósticos del partido.
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: bordeClaro,
+                    side: const BorderSide(color: bordeClaro),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                  ),
+                  onPressed: () => _mostrarDetalle(context, partido),
+                  child: const Text(
+                    'Ver todo',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
+
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: bordeClaro,
+                    side: const BorderSide(color: bordeClaro),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                  ),
+                  onPressed: () => _mostrarPronosticos(context, partido),
+                  child: const Text(
+                    'Pronósticos',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              onPressed: () => _mostrarDetalle(context, partido),
-              child: const Text(
-                'Ver todo',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              ],
             ),
           ],
         ),
@@ -367,6 +394,183 @@ class _PartidoCard extends StatelessWidget {
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cerrar',
+              style: TextStyle(
+                color: Color(0xFFFFD700),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Ventana emergente para mostrar los pronósticos del partido.
+  // Al cerrarla, se regresa a la misma pantalla de partidos por fase.
+  void _mostrarPronosticos(BuildContext context, Partido partido) {
+    final PartidosService partidosService = PartidosService();
+
+    final bool tieneResultado =
+        partido.golesLocal != null && partido.golesVisitante != null;
+
+    final String marcador = tieneResultado ? partido.resultado : 'vs';
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF071A3D),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        title: const Text(
+          'Pronósticos del partido',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFFFFD700),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: SizedBox(
+          width: 430,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Se muestra el partido y su resultado real.
+              _MarcadorPartido(
+                equipoLocal: partido.equipoLocal,
+                equipoVisitante: partido.equipoVisitante,
+                marcador: marcador,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Sección para dejar claro cuál fue el resultado real.
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.12),
+                  ),
+                ),
+                child: Text(
+                  'Resultado real: $marcador',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFFFFD700),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              // Aquí se cargan los pronósticos del partido seleccionado.
+              FutureBuilder<List<Pronostico>>(
+                future: partidosService.obtenerPronosticosPorPartido(
+                  partido.idPartido,
+                ),
+                builder: (context, snapshot) {
+                  // Mientras carga la información de pronósticos.
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.all(18),
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFFFD700),
+                      ),
+                    );
+                  }
+
+                  // Si ocurre un error al consultar los pronósticos.
+                  if (snapshot.hasError) {
+                    return Text(
+                      'No se pudieron cargar los pronósticos.\n${snapshot.error}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    );
+                  }
+
+                  final pronosticos = snapshot.data ?? [];
+
+                  // Si no hay pronósticos para ese partido.
+                  if (pronosticos.isEmpty) {
+                    return const Text(
+                      'No hay pronósticos registrados para este partido.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    );
+                  }
+
+                  // Lista de pronósticos encontrados.
+                  return ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxHeight: 220,
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: pronosticos.length,
+                      itemBuilder: (context, index) {
+                        final pronostico = pronosticos[index];
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.10),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  pronostico.nombreUsuario,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                pronostico.marcadorPronosticado,
+                                style: const TextStyle(
+                                  color: Color(0xFFFFD700),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            // Cierra solamente la ventana de pronósticos
+            // y regresa a la lista normal de partidos por fase.
             onPressed: () => Navigator.pop(context),
             child: const Text(
               'Cerrar',
