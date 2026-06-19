@@ -447,27 +447,6 @@ class _PartidoCard extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Sección para dejar claro cuál fue el resultado real.
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.12),
-                  ),
-                ),
-                child: Text(
-                  'Resultado real: $marcador',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFFFFD700),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
               const SizedBox(height: 14),
 
               // Aquí se cargan los pronósticos del partido seleccionado.
