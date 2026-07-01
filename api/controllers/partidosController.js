@@ -1,5 +1,6 @@
 const pool = require('../config/database');
 
+
 // Función para obtener todos los partidos con su ronda y equipos.
 const getPartidos = async (req, res) => {
   try {
@@ -20,29 +21,20 @@ const getPartidos = async (req, res) => {
       ORDER BY p.id_ronda, p.fecha;
     `;
 
-    // Ejecuta la consulta en la base de datos.
+        // Ejecuta la consulta en la base de datos.
     const result = await pool.query(query);
-
-    // Regresa los partidos en formato JSON.
-    res.json({
-      partidos: result.rows,
-    });
+    res.json({ partidos: result.rows });
   } catch (error) {
-    // Si ocurre un error, se muestra en consola y se manda respuesta de error.
     console.error('Error al obtener partidos:', error);
-    res.status(500).json({
-      message: 'Error al obtener partidos',
-      error: error.message,
-    });
+    res.status(500).json({ message: 'Error al obtener partidos', error: error.message });
   }
 };
+
 
 // Función para obtener los pronósticos de un partido específico.
 const getPronosticosPorPartido = async (req, res) => {
   try {
-    // Se obtiene el id del partido desde la URL.
     const { idPartido } = req.params;
-
     const query = `
       SELECT 
         pr.id_pronostico,
@@ -57,25 +49,50 @@ const getPronosticosPorPartido = async (req, res) => {
       ORDER BY pr.id_pronostico ASC;
     `;
 
-    // Se consulta la tabla pronostico y se une con usuarios para obtener el nombre.
+     // Se consulta la tabla pronostico y se une con usuarios para obtener el nombre.
     const result = await pool.query(query, [idPartido]);
-
-    // Regresa los pronósticos encontrados para ese partido.
-    res.json({
-      pronosticos: result.rows,
-    });
+    
+    
+      // Regresa los pronósticos encontrados para ese partido.
+    res.json({ prononsticos: result.rows });
   } catch (error) {
-    // Si ocurre un error, se manda una respuesta para avisar al frontend.
+
+     // Si ocurre un error, se manda una respuesta para avisar al frontend.
     console.error('Error al obtener pronósticos:', error);
-    res.status(500).json({
-      message: 'Error al obtener los pronósticos del partido',
-      error: error.message,
-    });
+    res.status(500).json({ message: 'Error al obtener los pronósticos del partido', error: error.message });
   }
 };
 
-// Se exportan las funciones para poder usarlas en las rutas de la API.
+// 3. NUEVA FUNCIÓN (PROTEGIDA CON JWT): Para que los usuarios guarden sus apuestas/predicciones
+const crearPronostico = async (req, res) => {
+  try {
+    const { id_partido, goles_e1, goles_e2 } = req.body;
+    
+  
+
+    const idUsuarioSeguro = req.usuario.id_usuario; 
+
+    const query = `
+      INSERT INTO pronostico (id_partido, id_usuario, goles_e1, goles_e2)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+    `;
+
+    const result = await pool.query(query, [id_partido, idUsuarioSeguro, goles_e1, goles_e2]);
+
+    res.status(201).json({
+      message: 'Pronóstico registrado con éxito de forma segura',
+      pronostico: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error al crear pronóstico:', error);
+    res.status(500).json({ message: 'No se pudo guardar el pronóstico', error: error.message });
+  }
+};
+
+// Exportamos las tres funciones
 module.exports = {
   getPartidos,
   getPronosticosPorPartido,
+  crearPronostico, 
 };
