@@ -14,18 +14,7 @@ class RankingService {
   // Lista de candidatos de base URL a intentar si falla la conexión.
   List<String> _candidates() {
     final base = AppConfig.apiBaseUrl;
-    final fallbacks = [
-      'http://127.0.0.1:5342',
-      'http://localhost:5342',
-      'http://10.0.2.2:5342',
-    ];
-
-    final list = <String>[];
-    list.add(base);
-    for (var f in fallbacks) {
-      if (!list.contains(f)) list.add(f);
-    }
-    return list;
+    return [base];
   }
 
   Future<List<RankingEntry>> fetchRanking({int? rondaId}) async {

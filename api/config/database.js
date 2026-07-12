@@ -1,6 +1,12 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+console.log('Intentando conectar a PostgreSQL con:');
+console.log('  HOST:', process.env.DATABASE_HOST);
+console.log('  PORT:', process.env.DATABASE_PORT);
+console.log('  USER:', process.env.DATABASE_USER);
+console.log('  DATABASE:', process.env.DATABASE_NAME);
+
 const pool = new Pool({
   host: process.env.DATABASE_HOST,
   port: parseInt(process.env.DATABASE_PORT),
@@ -13,11 +19,11 @@ const pool = new Pool({
 });
 
 pool.on('error', (err) => {
-  console.error('Error inesperado en cliente idle:', err);
+  console.error('❌ Error en cliente idle:', err.message);
 });
 
 pool.on('connect', () => {
-  console.log('Conectado a PostgreSQL correctamente');
+  console.log('✅ Conectado a PostgreSQL correctamente');
 });
 
 module.exports = pool;

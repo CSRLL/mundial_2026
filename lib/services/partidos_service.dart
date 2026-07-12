@@ -10,18 +10,7 @@ class PartidosService {
   final String baseUrl = AppConfig.apiBaseUrl;
 
   List<String> _candidates() {
-    final fallbacks = [
-      'http://127.0.0.1:5342',
-      'http://localhost:5342',
-      'http://10.0.2.2:5342',
-    ];
-
-    final list = <String>[];
-    list.add(baseUrl);
-    for (var f in fallbacks) {
-      if (!list.contains(f)) list.add(f);
-    }
-    return list;
+    return [baseUrl];
   }
 
   // Método para obtener todos los partidos desde la API.

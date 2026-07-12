@@ -10,18 +10,18 @@ class AppConfig {
     }
 
     if (kIsWeb) {
-      return 'http://localhost:5342';
+      return 'http://178.16.142.158:5342';
     }
 
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:5342';
+      return 'http://178.16.142.158:5342';
     }
 
     if (Platform.isIOS) {
-      return 'http://localhost:5342';
+      return 'http://178.16.142.158:5342';
     }
 
-    return 'http://localhost:5342';
+    return 'http://178.16.142.158:5342';
   }
 
   static const String rankingEndpoint = '/api/ranking';
