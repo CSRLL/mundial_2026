@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
@@ -10,47 +11,74 @@ class RankingService {
 
   final http.Client _client;
 
+  // Lista de candidatos de base URL a intentar si falla la conexión.
+  List<String> _candidates() {
+    final base = AppConfig.apiBaseUrl;
+    final fallbacks = [
+      'http://127.0.0.1:5342',
+      'http://localhost:5342',
+      'http://10.0.2.2:5342',
+    ];
+
+    final list = <String>[];
+    list.add(base);
+    for (var f in fallbacks) {
+      if (!list.contains(f)) list.add(f);
+    }
+    return list;
+  }
+
   Future<List<RankingEntry>> fetchRanking({int? rondaId}) async {
-    final uri = Uri.parse(
-      rondaId == null
-          ? '${AppConfig.apiBaseUrl}${AppConfig.rankingEndpoint}'
-          : '${AppConfig.apiBaseUrl}${AppConfig.rankingEndpoint}?ronda_id=$rondaId',
-    );
+    final candidates = _candidates();
+    Exception? lastError;
 
-    final response = await _client.get(uri);
+    for (final base in candidates) {
+      try {
+        final uri = Uri.parse(
+          rondaId == null
+              ? '$base${AppConfig.rankingEndpoint}'
+              : '$base${AppConfig.rankingEndpoint}?ronda_id=$rondaId',
+        );
 
-    if (response.statusCode != 200) {
-      throw Exception(
-        'No se pudo cargar el ranking. Código: ${response.statusCode}',
-      );
-    }
+        final response = await _client.get(uri).timeout(const Duration(seconds: 6));
 
-    final dynamic decoded = jsonDecode(response.body);
-    final data = decoded is Map<String, dynamic> ? decoded : {'ranking': []};
-    final rawList = data['ranking'] is List ? data['ranking'] as List : const [];
+        if (response.statusCode != 200) {
+          throw Exception('Código HTTP ${response.statusCode} desde $uri');
+        }
 
-    final ranking = rawList
-        .map((item) => RankingEntry.fromJson(item as Map<String, dynamic>))
-        .toList();
+        final dynamic decoded = jsonDecode(response.body);
+        final data = decoded is Map<String, dynamic> ? decoded : {'ranking': []};
+        final rawList = data['ranking'] is List ? data['ranking'] as List : const [];
 
-    ranking.sort((a, b) {
-      if (b.aciertos != a.aciertos) {
-        return b.aciertos.compareTo(a.aciertos);
+        final ranking = rawList
+            .map((item) => RankingEntry.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        ranking.sort((a, b) {
+          if (b.aciertos != a.aciertos) {
+            return b.aciertos.compareTo(a.aciertos);
+          }
+          return b.porcentaje.compareTo(a.porcentaje);
+        });
+
+        for (var i = 0; i < ranking.length; i++) {
+          ranking[i] = RankingEntry(
+            userId: ranking[i].userId,
+            userName: ranking[i].userName,
+            aciertos: ranking[i].aciertos,
+            totalPronosticos: ranking[i].totalPronosticos,
+            porcentaje: ranking[i].porcentaje,
+            posicion: i + 1,
+          );
+        }
+
+        return ranking;
+      } catch (e) {
+        lastError = Exception('Error conectando a $base: $e');
+        continue;
       }
-      return b.porcentaje.compareTo(a.porcentaje);
-    });
-
-    for (var i = 0; i < ranking.length; i++) {
-      ranking[i] = RankingEntry(
-        userId: ranking[i].userId,
-        userName: ranking[i].userName,
-        aciertos: ranking[i].aciertos,
-        totalPronosticos: ranking[i].totalPronosticos,
-        porcentaje: ranking[i].porcentaje,
-        posicion: i + 1,
-      );
     }
 
-    return ranking;
+    throw Exception('No se pudo conectar a la API. Intentados: ${candidates.join(', ')}. Último error: ${lastError ?? 'desconocido'}');
   }
 }

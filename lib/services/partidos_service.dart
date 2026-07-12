@@ -9,37 +9,70 @@ class PartidosService {
   // URL base de la API.
   final String baseUrl = AppConfig.apiBaseUrl;
 
+  List<String> _candidates() {
+    final fallbacks = [
+      'http://127.0.0.1:5342',
+      'http://localhost:5342',
+      'http://10.0.2.2:5342',
+    ];
+
+    final list = <String>[];
+    list.add(baseUrl);
+    for (var f in fallbacks) {
+      if (!list.contains(f)) list.add(f);
+    }
+    return list;
+  }
+
   // Método para obtener todos los partidos desde la API.
   Future<List<Partido>> obtenerPartidos() async {
-    final response = await http.get(Uri.parse('$baseUrl${AppConfig.partidosEndpoint}'));
+    final candidates = _candidates();
+    Exception? lastError;
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final List partidosJson = data['partidos'] ?? [];
+    for (final base in candidates) {
+      try {
+        final uri = Uri.parse('$base${AppConfig.partidosEndpoint}');
+        final response = await http.get(uri).timeout(const Duration(seconds: 6));
 
-      return partidosJson
-          .map((json) => Partido.fromJson(json))
-          .toList();
-    } else {
-      throw Exception('Error al cargar los partidos');
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final List partidosJson = data['partidos'] ?? [];
+
+          return partidosJson.map((json) => Partido.fromJson(json)).toList();
+        }
+
+        lastError = Exception('Código ${response.statusCode} desde $uri');
+      } catch (e) {
+        lastError = Exception('Error conectando a $base: $e');
+      }
     }
+
+    throw Exception('No se pudo cargar los partidos. Intentados: ${candidates.join(', ')}. Último error: $lastError');
   }
 
   // Método para obtener los pronósticos de un partido específico.
   Future<List<Pronostico>> obtenerPronosticosPorPartido(int idPartido) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/partidos/$idPartido/pronosticos'),
-    );
+    final candidates = _candidates();
+    Exception? lastError;
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final List pronosticosJson = data['pronosticos'] ?? [];
+    for (final base in candidates) {
+      try {
+        final uri = Uri.parse('$base${AppConfig.partidosEndpoint}/$idPartido/pronosticos');
+        final response = await http.get(uri).timeout(const Duration(seconds: 6));
 
-      return pronosticosJson
-          .map((json) => Pronostico.fromJson(json))
-          .toList();
-    } else {
-      throw Exception('Error al cargar los pronósticos');
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final List pronosticosJson = data['pronosticos'] ?? [];
+
+          return pronosticosJson.map((json) => Pronostico.fromJson(json)).toList();
+        }
+
+        lastError = Exception('Código ${response.statusCode} desde $uri');
+      } catch (e) {
+        lastError = Exception('Error conectando a $base: $e');
+      }
     }
+
+    throw Exception('No se pudo cargar los pronósticos. Intentados: ${candidates.join(', ')}. Último error: $lastError');
   }
 }
