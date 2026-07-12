@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../config/app_config.dart';
 import '../models/ranking_entry.dart';
 
 class RankingService {
@@ -9,14 +10,11 @@ class RankingService {
 
   final http.Client _client;
 
-  static const String _baseUrl = 'http://localhost:5000';
-  static const String _rankingEndpoint = '/api/ranking';
-
   Future<List<RankingEntry>> fetchRanking({int? rondaId}) async {
     final uri = Uri.parse(
       rondaId == null
-          ? '$_baseUrl$_rankingEndpoint'
-          : '$_baseUrl$_rankingEndpoint?ronda_id=$rondaId',
+          ? '${AppConfig.apiBaseUrl}${AppConfig.rankingEndpoint}'
+          : '${AppConfig.apiBaseUrl}${AppConfig.rankingEndpoint}?ronda_id=$rondaId',
     );
 
     final response = await _client.get(uri);

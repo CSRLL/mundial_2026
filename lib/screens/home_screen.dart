@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         child: Container(
-          color: Colors.black.withOpacity(esCelular ? 0.38 : 0.28),
+          color: Colors.black.withValues(alpha: esCelular ? 0.38 : 0.28),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -127,9 +127,9 @@ class _HomeButton extends StatelessWidget {
     final bool esCelular = MediaQuery.of(context).size.width < 700;
 
     return Card(
-      color: Colors.white.withOpacity(0.88),
+      color: Colors.white.withValues(alpha: 0.88),
       elevation: 8,
-      shadowColor: Colors.black.withOpacity(0.35),
+      shadowColor: Colors.black.withValues(alpha: 0.35),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
       ),

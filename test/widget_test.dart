@@ -5,7 +5,6 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +12,7 @@ import 'package:mundial_2026/main.dart';
 import 'package:mundial_2026/providers/ranking_provider.dart';
 
 void main() {
-  testWidgets('app launches with ranking screen title', (WidgetTester tester) async {
+  testWidgets('app launches with home screen content', (WidgetTester tester) async {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
@@ -25,6 +24,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Ranking de aciertos'), findsOneWidget);
+    expect(find.text('Mundial 2026'), findsOneWidget);
+    expect(find.text('Ranking Mundial 2026'), findsOneWidget);
   });
 }

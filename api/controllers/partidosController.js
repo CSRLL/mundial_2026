@@ -51,10 +51,9 @@ const getPronosticosPorPartido = async (req, res) => {
 
      // Se consulta la tabla pronostico y se une con usuarios para obtener el nombre.
     const result = await pool.query(query, [idPartido]);
-    
-    
-      // Regresa los pronósticos encontrados para ese partido.
-    res.json({ prononsticos: result.rows });
+
+    // Regresa los pronósticos encontrados para ese partido.
+    res.json({ pronosticos: result.rows });
   } catch (error) {
 
      // Si ocurre un error, se manda una respuesta para avisar al frontend.

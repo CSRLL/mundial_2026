@@ -269,7 +269,7 @@ class _RankingScreenState extends State<RankingScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -318,7 +318,7 @@ class _RankingScreenState extends State<RankingScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E5628).withOpacity(0.1),
+                color: const Color(0xFF1E5628).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -360,7 +360,7 @@ class _RankingScreenState extends State<RankingScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -405,7 +405,7 @@ class _RankingScreenState extends State<RankingScreen> {
                       child: Text(
                         'Aciertos/Total',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFFFD700),
                           fontSize: 12,

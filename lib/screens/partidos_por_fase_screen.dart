@@ -45,8 +45,8 @@ class PartidosPorFaseScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.20),
-                    Colors.black.withOpacity(0.32),
+                    Colors.black.withValues(alpha: 0.20),
+                    Colors.black.withValues(alpha: 0.32),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -177,14 +177,14 @@ class _SeccionRonda extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: verdeMundial.withOpacity(0.92),
+              color: verdeMundial.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: doradoMundial.withOpacity(0.45),
+                color: doradoMundial.withValues(alpha: 0.45),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.22),
+                  color: Colors.black.withValues(alpha: 0.22),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -243,12 +243,12 @@ class _PartidoCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: colorTarjeta.withOpacity(0.92),
+        color: colorTarjeta.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: bordeClaro.withOpacity(0.28)),
+        border: Border.all(color: bordeClaro.withValues(alpha: 0.28)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.30),
+            color: Colors.black.withValues(alpha: 0.30),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -369,10 +369,10 @@ class _PartidoCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                 ),
               ),
               child: Column(
@@ -509,10 +509,10 @@ class _PartidoCard extends StatelessWidget {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.08),
+                            color: Colors.white.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.10),
+                              color: Colors.white.withValues(alpha: 0.10),
                             ),
                           ),
                           child: Row(
@@ -805,7 +805,7 @@ class _EstadoError extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.90),
+            color: Colors.white.withValues(alpha: 0.90),
             borderRadius: BorderRadius.circular(18),
           ),
           child: Column(

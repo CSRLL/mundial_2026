@@ -1,16 +1,17 @@
 import 'dart:convert'; // Permite convertir respuestas JSON a datos que Dart pueda manejar.
 import 'package:http/http.dart' as http; // Librería para hacer peticiones HTTP a la API.
 
+import '../config/app_config.dart';
 import '../models/partido.dart'; // Modelo para convertir los partidos recibidos desde la API.
 import '../models/pronostico.dart'; // Modelo para convertir los pronósticos recibidos desde la API.
 
 class PartidosService {
   // URL base de la API.
-  static const String baseUrl = 'http://localhost:5000';
+  final String baseUrl = AppConfig.apiBaseUrl;
 
   // Método para obtener todos los partidos desde la API.
   Future<List<Partido>> obtenerPartidos() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/partidos'));
+    final response = await http.get(Uri.parse('$baseUrl${AppConfig.partidosEndpoint}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

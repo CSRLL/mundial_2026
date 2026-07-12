@@ -5,6 +5,7 @@ const authController = require('../controllers/authController');
 
 // Rutas para tu app de Flutter
 router.post('/login', authController.login);
+router.post('/confirm', authController.confirm);
 router.post('/refresh', authController.refresh);
 
 module.exports = router;
