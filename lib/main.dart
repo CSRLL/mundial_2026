@@ -43,7 +43,7 @@ class Mundial2026App extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.login,
       routes: AppRoutes.routes,
     );
   }

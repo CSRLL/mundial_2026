@@ -5,11 +5,12 @@ const accessSecret = process.env.JWT_ACCESS_SECRET || 'dev_access_secret';
 const refreshSecret = process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret';
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { usuario, email, password } = req.body;
+    const loginValue = usuario || email;
 
     try {
-        const userQuery = 'SELECT id_usuario, password, nombre FROM usuarios WHERE email = $1';
-        const userResult = await pool.query(userQuery, [email]);
+        const userQuery = 'SELECT id_usuario, password, nombre FROM usuarios WHERE email = $1 OR nombre = $2';
+        const userResult = await pool.query(userQuery, [loginValue, loginValue]);
 
         if (userResult.rows.length === 0) {
             return res.status(401).json({ error: 'Credenciales incorrectas' });
