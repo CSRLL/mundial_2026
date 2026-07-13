@@ -65,34 +65,41 @@ class HomeScreen extends StatelessWidget {
 
                       SizedBox(height: esCelular ? 34 : 46),
 
-                      _HomeButton(
-                        title: 'Ranking Mundial 2026',
-                        subtitle: 'Ver tabla de aciertos de usuarios',
-                        icon: Icons.emoji_events,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RankingScreen(),
-                            ),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      _HomeButton(
-                        title: 'Partidos por fase',
-                        subtitle: 'Ver rondas, marcadores y detalles',
-                        icon: Icons.sports_soccer,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const PartidosPorFaseScreen(),
-                            ),
-                          );
-                        },
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _HomeButton(
+                                title: 'Ranking Mundial 2026',
+                                subtitle: 'Ver tabla de aciertos de usuarios',
+                                icon: Icons.emoji_events,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const RankingScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 18),
+                              _HomeButton(
+                                title: 'Partidos por fase',
+                                subtitle: 'Ver rondas, marcadores y detalles',
+                                icon: Icons.sports_soccer,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const PartidosPorFaseScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../config/app_config.dart';
 import '../models/ranking_entry.dart';
+import 'auth_storage.dart';
 
 class RankingService {
   RankingService({http.Client? client}) : _client = client ?? http.Client();
@@ -15,6 +16,15 @@ class RankingService {
   List<String> _candidates() {
     final base = AppConfig.apiBaseUrl;
     return [base];
+  }
+
+  Future<Map<String, String>> _headers() async {
+    final authStorage = AuthStorage();
+    final token = await authStorage.getAccessToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
   }
 
   Future<List<RankingEntry>> fetchRanking({int? rondaId}) async {
@@ -29,7 +39,8 @@ class RankingService {
               : '$base${AppConfig.rankingEndpoint}?ronda_id=$rondaId',
         );
 
-        final response = await _client.get(uri).timeout(const Duration(seconds: 6));
+        final headers = await _headers();
+        final response = await _client.get(uri, headers: headers).timeout(const Duration(seconds: 6));
 
         if (response.statusCode != 200) {
           throw Exception('Código HTTP ${response.statusCode} desde $uri');

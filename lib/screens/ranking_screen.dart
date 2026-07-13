@@ -56,60 +56,69 @@ class _RankingScreenState extends State<RankingScreen> {
                 ? Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                          const SizedBox(height: 16),
-                          Text(
-                            provider.errorMessage!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _refreshRanking,
-                            child: const Text('Reintentar'),
-                          ),
-                        ],
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                            const SizedBox(height: 16),
+                            Text(
+                              provider.errorMessage!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: _refreshRanking,
+                              child: const Text('Reintentar'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   )
-                : SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (provider.ranking.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            _buildTopThreeCards(provider.ranking),
-                            const SizedBox(height: 32),
-                            _buildRankingTable(provider.ranking),
-                          ] else
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(32),
-                                child: Column(
-                                  children: [
-                                    const Icon(Icons.info_outline, size: 64, color: Colors.grey),
-                                    const SizedBox(height: 16),
-                                    const Text(
-                                      'No hay datos de ranking disponibles',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey,
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (provider.ranking.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  _buildTopThreeCards(provider.ranking),
+                                  const SizedBox(height: 24),
+                                  _buildRankingTable(provider.ranking),
+                                ] else
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(32),
+                                      child: Column(
+                                        children: [
+                                          const Icon(Icons.info_outline, size: 64, color: Colors.grey),
+                                          const SizedBox(height: 16),
+                                          const Text(
+                                            'No hay datos de ranking disponibles',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
+                                  ),
+                                const SizedBox(height: 32),
+                              ],
                             ),
-                          const SizedBox(height: 32),
-                        ],
-                      ),
-                    ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
       ),
     );

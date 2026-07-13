@@ -1,0 +1,13 @@
+# Dependencias locales
+node_modules
+npm-debug.log
+
+# Archivos de entorno y credenciales (Incluir otros archivos que también utilices para este fin)
+.env
+.git
+.gitignore
+
+# Archivos de configuración de Docker y documentación
+Dockerfile
+.dockerignore
+README.md

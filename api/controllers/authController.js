@@ -1,30 +1,23 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
+const { getConfiguredCredentials } = require('../utils/authConfig');
 
 const accessSecret = process.env.JWT_ACCESS_SECRET || 'dev_access_secret';
 const refreshSecret = process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret';
 
 const login = async (req, res) => {
     const { email, password } = req.body;
+    const configuredCredentials = getConfiguredCredentials();
+
+    if (email !== configuredCredentials.email || password !== configuredCredentials.password) {
+        return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
 
     try {
-        const userQuery = 'SELECT id_usuario, password, nombre FROM usuarios WHERE email = $1';
-        const userResult = await pool.query(userQuery, [email]);
-
-        if (userResult.rows.length === 0) {
-            return res.status(401).json({ error: 'Credenciales incorrectas' });
-        }
-
-        const usuario = userResult.rows[0];
-
-        if (usuario.password !== password) {
-            return res.status(401).json({ error: 'Credenciales incorrectas' });
-        }
-
         const pendingToken = jwt.sign(
             {
-                id_usuario: usuario.id_usuario,
-                nombre: usuario.nombre,
+                sub: 'app-user',
+                nombre: 'Administrador',
                 confirmado: false,
                 tipo: 'confirmacion'
             },
@@ -58,14 +51,14 @@ const confirm = async (req, res) => {
         }
 
         const refreshToken = jwt.sign(
-            { id_usuario: verificado.id_usuario },
+            { sub: verificado.sub, tipo: 'refresh' },
             refreshSecret,
             { expiresIn: '7d' }
         );
 
         const accessToken = jwt.sign(
             {
-                id_usuario: verificado.id_usuario,
+                sub: verificado.sub,
                 nombre: verificado.nombre,
                 confirmado: true,
                 tipo: 'acceso'
@@ -73,9 +66,6 @@ const confirm = async (req, res) => {
             accessSecret,
             { expiresIn: '15m' }
         );
-
-        const updateTokenQuery = 'UPDATE usuarios SET refresh_token = $1 WHERE id_usuario = $2';
-        await pool.query(updateTokenQuery, [refreshToken, verificado.id_usuario]);
 
         return res.status(200).json({
             access_token: accessToken,

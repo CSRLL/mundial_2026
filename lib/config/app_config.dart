@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 class AppConfig {
-  static const String _localApiUrl = 'http://192.168.1.104:5342';
+  static const String _localApiUrl = 'http://172.30.66.117:5342';
+  /* static const String _localApiUrl = 'http://IP_DEL_SERVIDOR:5342'; */
   static const String _androidEmulatorApiUrl = 'http://10.0.2.2:5342';
   static const bool _useAndroidEmulator = bool.fromEnvironment('API_USE_ANDROID_EMULATOR', defaultValue: false);
 

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http; // Librería para hacer peticiones HTTP
 import '../config/app_config.dart';
 import '../models/partido.dart'; // Modelo para convertir los partidos recibidos desde la API.
 import '../models/pronostico.dart'; // Modelo para convertir los pronósticos recibidos desde la API.
+import 'auth_storage.dart';
 
 class PartidosService {
   // URL base de la API.
@@ -11,6 +12,15 @@ class PartidosService {
 
   List<String> _candidates() {
     return [baseUrl];
+  }
+
+  Future<Map<String, String>> _headers() async {
+    final authStorage = AuthStorage();
+    final token = await authStorage.getAccessToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
   }
 
   // Método para obtener todos los partidos desde la API.
@@ -21,7 +31,8 @@ class PartidosService {
     for (final base in candidates) {
       try {
         final uri = Uri.parse('$base${AppConfig.partidosEndpoint}');
-        final response = await http.get(uri).timeout(const Duration(seconds: 6));
+        final headers = await _headers();
+        final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 6));
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
@@ -47,7 +58,8 @@ class PartidosService {
     for (final base in candidates) {
       try {
         final uri = Uri.parse('$base${AppConfig.partidosEndpoint}/$idPartido/pronosticos');
-        final response = await http.get(uri).timeout(const Duration(seconds: 6));
+        final headers = await _headers();
+        final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 6));
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);

@@ -11,7 +11,7 @@ const protegerRuta = (req, res, next) => {
     }
 
     try {
-        const verificado = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+        const verificado = jwt.verify(token, process.env.JWT_ACCESS_SECRET || 'dev_access_secret');
 
         if (!verificado.confirmado) {
             return res.status(403).json({
