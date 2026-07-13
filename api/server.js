@@ -7,7 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 5342;
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = '0.0.0.0';
 
 app.use(cors());
 app.use(express.json());
